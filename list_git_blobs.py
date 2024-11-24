@@ -32,36 +32,27 @@ def get_git_blobs(repo_path=None, verbose=False):
         git.exc.NoSuchPathError: If the provided path does not exist.
     """
     
-    # Replace '/path/to/repo' with the path to your cloned repository
-    repo_path = '/home/bhagavan/my-git-repos/genai'
     repo = Repo(repo_path)
 
-    # Ensure the repository is not bare
     if repo.bare:
         return None
 
-    # Retrieve repository name
     repo_name = os.path.basename(repo.working_tree_dir)
 
-    # Retrieve repository base path
     repo_base_path = repo.working_tree_dir
 
-    # Retrieve remote URL
     try:
         repo_remote_url = next(repo.remote().urls)
     except ValueError:
         repo_remote_url = None  # No remote found
         return None
 
-    # Retrieve branch details
     repo_branch_details = [branch.name for branch in repo.branches]
 
-    # Initialize counters
     repo_blobs_count = 0
     repo_type_stats = defaultdict(int)
     blobs_details = []
 
-    # Traverse the repository tree to gather blob information
     for item in repo.head.commit.tree.traverse():
         if item.type == 'blob':  # 'blob' indicates a file
             repo_blobs_count += 1
@@ -69,10 +60,8 @@ def get_git_blobs(repo_path=None, verbose=False):
             repo_type_stats[file_extension] += 1
             blobs_details.append({"name": item.path, "size": item.size})
 
-    # Convert defaultdict to regular dict
     repo_type_stats = dict(repo_type_stats)
 
-    # Compile the dictionary
     repo_details = {
         "repo_name": repo_name,
         "repo_base_path": repo_base_path,
